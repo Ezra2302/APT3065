@@ -2,6 +2,12 @@
 
 *Help that finds you.* An anonymous support-request and volunteer-matching app for FGM survivors and girls at risk (USIU-Africa midterm project).
 
+## Group members
+| Name | Student number |
+|---|---|
+| Fian Siyad | 668816 |
+| Mark Kasii | 670173 |
+
 Built with **Expo (React Native)** in plain JavaScript, no navigation library, so it is easy to read.
 
 ## Run it
