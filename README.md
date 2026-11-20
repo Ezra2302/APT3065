@@ -32,3 +32,6 @@ src/data.js         content, demo helpers, case-ID generator
 src/screens/        one file per screen
 ```
 Data is in memory and the helpers are simulated with timers. The planned Django + Africa's Talking backend would replace them.
+
+## Report
+The project report (PDF) is in [docs/Lantern_Circle_Report.pdf](docs/Lantern_Circle_Report.pdf).
