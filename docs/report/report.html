@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lantern Circle: Mobile Prototype Report</title>
+<style>
+  @page { size: A4; margin: 0; }
+  :root {
+    --maroon: #6B1F2E; --maroon-dark: #4E1621; --cream: #F6F0E1; --sage: #E4EAD9;
+    --sand: #F0E3C8; --ink: #2B1B1F; --muted: #6B5A5E; --green: #5E7A55; --rule: #D9CBA3;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--cream); color: var(--ink);
+    font-family: Inter, "Helvetica Neue", Arial, sans-serif; font-size: 10pt; line-height: 1.45; }
+  .page { width: 210mm; height: 297mm; overflow: hidden; padding: 16mm 18mm 20mm; position: relative;
+    page-break-after: always; background: var(--cream); }
+  .page:last-child { page-break-after: auto; }
+  .footer { position: absolute; bottom: 10mm; left: 18mm; right: 18mm; font-size: 8pt;
+    color: var(--muted); display: flex; justify-content: space-between; }
+
+  /* Cover */
+  .cover { background: var(--maroon); color: var(--cream); padding: 0; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: center; }
+  .cover .rings { position: absolute; right: -40mm; top: 50mm; width: 170mm; height: 170mm; }
+  .cover .inner { padding: 0 22mm; position: relative; z-index: 1; }
+  .cover h1 { font-size: 40pt; line-height: 1.05; margin: 0 0 4mm; font-weight: 800; }
+  .cover .tag { font-size: 16pt; font-style: italic; color: var(--sand); margin-bottom: 10mm; }
+  .cover .sub { font-size: 12pt; max-width: 105mm; opacity: .92; }
+  .cover .kind { display: inline-block; margin-top: 12mm; padding: 2mm 4mm; border: 1px solid var(--sand);
+    border-radius: 20px; font-size: 9pt; letter-spacing: .12em; text-transform: uppercase; color: var(--sand); }
+  .members { margin-top: 18mm; border-top: 1px solid rgba(246,240,225,.35); padding-top: 6mm; max-width: 110mm; }
+  .members .lbl { font-size: 8.5pt; letter-spacing: .14em; text-transform: uppercase; color: var(--sand); margin-bottom: 3mm; }
+  .members table { width: 100%; border-collapse: collapse; font-size: 11pt; }
+  .members td { padding: 1.5mm 0; border-bottom: 1px solid rgba(246,240,225,.18); }
+  .members td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .cover .meta { position: absolute; bottom: 14mm; left: 22mm; font-size: 9pt; color: var(--sand); z-index: 1; }
+
+  /* Headings */
+  .eyebrow { font-size: 8.5pt; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--maroon); margin-bottom: 1mm; }
+  h2 { font-size: 22pt; margin: 0 0 5mm; color: var(--ink); font-weight: 800; line-height: 1.15; }
+  h3 { font-size: 12.5pt; margin: 6mm 0 2mm; color: var(--maroon); }
+  p { margin: 0 0 3mm; }
+  .lead { font-size: 12pt; color: var(--ink); margin-bottom: 6mm; }
+  strong { color: var(--maroon-dark); }
+  code { font-family: "DejaVu Sans Mono", monospace; font-size: 8.8pt; background: var(--sand); padding: .3mm 1.2mm; border-radius: 3px; }
+
+  /* Blocks */
+  .card { background: var(--sage); border-radius: 4mm; padding: 5mm 6mm; }
+  .card.dark { background: var(--maroon); color: var(--cream); }
+  .card.dark strong, .card.dark .eyebrow { color: var(--sand); }
+  .card.sand { background: var(--sand); }
+  .grid { display: grid; gap: 4mm; }
+  .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: 1fr 1fr 1fr; }
+  .num { width: 9mm; height: 9mm; border-radius: 50%; background: var(--maroon); color: var(--cream);
+    display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 10pt; flex: none; }
+  .step { display: flex; gap: 4mm; align-items: flex-start; margin-bottom: 3.5mm; }
+  .step b { display: block; color: var(--ink); }
+  ul, ol { margin: 0 0 3mm; padding-left: 5mm; }
+  li { margin-bottom: 1mm; }
+
+  table.data { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 9pt; margin: 2mm 0 4mm;
+    border-radius: 3mm; overflow: hidden; }
+  table.data th { background: var(--maroon); color: var(--cream); text-align: left; padding: 2.4mm 3mm; font-weight: 600; }
+  table.data td { padding: 2.2mm 3mm; border-bottom: 1px solid var(--rule); background: #FBF8F0; vertical-align: top; }
+  table.data tr:nth-child(even) td { background: var(--sage); }
+  .pill { display: inline-block; padding: .5mm 2.5mm; border-radius: 10px; font-size: 8pt; font-weight: 700; white-space: nowrap; }
+  .ok { background: #DCE7D3; color: #3F5A3A; } .sim { background: var(--sand); color: #7A5A1E; } .fut { background: #EBD6DA; color: var(--maroon); }
+
+  .swatches { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm; margin: 3mm 0 5mm; }
+  .sw { border-radius: 3mm; overflow: hidden; border: 1px solid var(--rule); background: #fff; font-size: 8pt; }
+  .sw div { height: 14mm; } .sw span { display: block; padding: 1.5mm 2mm; }
+
+  /* Screens */
+  .shots { display: grid; gap: 8mm; padding: 0 6mm; margin-top: 4mm; }
+  .shots.s3 { grid-template-columns: repeat(3, 1fr); }
+  figure.shot { margin: 0; }
+  .phone { background: var(--ink); border-radius: 6mm; padding: 2mm; box-shadow: 0 2mm 5mm rgba(43,27,31,.18); }
+  .phone img { display: block; width: 100%; border-radius: 4.5mm; }
+  figcaption { font-size: 8.5pt; margin-top: 2.5mm; color: var(--muted); }
+  figcaption b { color: var(--maroon); display: block; font-size: 9pt; }
+
+  pre { background: var(--maroon-dark); color: var(--cream); padding: 4mm 5mm; border-radius: 3mm;
+    font-family: "DejaVu Sans Mono", monospace; font-size: 8.3pt; line-height: 1.55; white-space: pre; margin: 2mm 0 5mm; }
+  .flow { display: flex; align-items: stretch; gap: 2mm; margin: 4mm 0 5mm; }
+  .flow .box { flex: 1; background: var(--sage); border-radius: 3mm; padding: 3mm; font-size: 8.8pt; }
+  .flow .box b { display: block; color: var(--maroon); font-size: 9.5pt; }
+  .flow .arrow { align-self: center; color: var(--maroon); font-weight: 800; }
+  .stat { font-size: 26pt; font-weight: 800; color: var(--cream); line-height: 1; }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<section class="page cover">
+  <svg class="rings" viewBox="0 0 200 200" aria-hidden="true">
+    <circle cx="100" cy="100" r="98" fill="none" stroke="#F0E3C8" stroke-opacity=".25"/>
+    <circle cx="100" cy="100" r="78" fill="#F0E3C8" fill-opacity=".08" stroke="#F0E3C8" stroke-opacity=".35"/>
+    <circle cx="100" cy="100" r="56" fill="#E4EAD9" fill-opacity=".22" stroke="#E4EAD9" stroke-opacity=".5"/>
+    <circle cx="100" cy="100" r="36" fill="#8FA882"/>
+    <g fill="none" stroke="#F6F0E1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M92 82h16M100 76v6M90 86h20l-2 26H92z"/><path d="M94 116h12"/><path d="M100 92v12"/>
+    </g>
+  </svg>
+  <div class="inner">
+    <h1>Lantern Circle</h1>
+    <div class="tag">Help that finds you</div>
+    <div class="sub">Mobile prototype report: an anonymous support-request and volunteer-matching app for FGM survivors and girls at risk.</div>
+    <div class="kind">Project report · Mobile prototype</div>
+    <div class="members">
+      <div class="lbl">Group members</div>
+      <table>
+        <tr><td>Fian Siyad</td><td>668816</td></tr>
+        <tr><td>Mark Kasii</td><td>670173</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="meta">USIU-Africa · November 2026 · github.com/Ezra2302/APT3065</div>
+</section>
+
+<!-- CONTENTS + INTRO -->
+<section class="page">
+  <div class="eyebrow">Contents</div>
+  <div class="grid g3" style="margin-bottom:9mm">
+    <div class="card"><div class="step"><span class="num">1</span><div><b>Introduction</b></div></div><div class="step"><span class="num">2</span><div><b>Methodology</b></div></div><div class="step" style="margin:0"><span class="num">3</span><div><b>Requirements</b></div></div></div>
+    <div class="card"><div class="step"><span class="num">4</span><div><b>UI/UX design</b></div></div><div class="step"><span class="num">5</span><div><b>Screen walkthrough</b></div></div><div class="step" style="margin:0"><span class="num">6</span><div><b>Architecture</b></div></div></div>
+    <div class="card"><div class="step"><span class="num">7</span><div><b>Testing</b></div></div><div class="step"><span class="num">8</span><div><b>Limitations</b></div></div><div class="step" style="margin:0"><span class="num">9</span><div><b>Conclusion</b></div></div></div>
+  </div>
+
+  <div class="eyebrow">Section 1</div>
+  <h2>Introduction</h2>
+  <p class="lead">Lantern Circle is a working mobile prototype of the platform proposed in our midterm pitch. It lets FGM survivors, and people worried about a girl at risk, ask for help anonymously and be matched with the right responder.</p>
+
+  <div class="grid g2" style="margin-bottom:5mm">
+    <div class="card dark">
+      <div class="eyebrow">Problem statement</div>
+      <p style="font-size:11.5pt;margin:0">People affected by FGM, and those trying to protect girls, have no safe, anonymous and fast way to reach the right responder. Fear of exposure stops people asking, and a shared inbox has no fallback when nobody answers.</p>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Aim of this prototype</div>
+      <ol style="margin:0">
+        <li>Ask for peer or professional support without a name.</li>
+        <li>Report a girl at risk to verified triage staff only.</li>
+        <li>See a request matched, escalated and accepted.</li>
+        <li>Talk with a helper, or with peers under a pseudonym.</li>
+        <li>Learn reviewed facts, and leave instantly with a quick exit.</li>
+      </ol>
+    </div>
+  </div>
+  <p>The prototype is a front-end demonstration. Matching and helper replies are simulated inside the app; the Django backend described in the pitch is future work (section 8).</p>
+  <div class="footer"><span>Lantern Circle | Help that finds you</span><span>2</span></div>
+</section>
+
+<!-- METHODOLOGY -->
+<section class="page">
+  <div class="eyebrow">Section 2</div>
+  <h2>Methodology</h2>
+  <p class="lead">We followed a user-centred design (UCD) process in short iterations: understand the users, define requirements, design, build, then test and refine.</p>
+
+  <div class="flow">
+    <div class="box"><b>1. Understand</b>Four user groups from the pitch; requesters first.</div><div class="arrow">›</div>
+    <div class="box"><b>2. Define</b>Pitch features become requirements.</div><div class="arrow">›</div>
+    <div class="box"><b>3. Design</b>One path per task, one action per screen.</div><div class="arrow">›</div>
+    <div class="box"><b>4. Build</b>React Native with Expo, plain JavaScript.</div><div class="arrow">›</div>
+    <div class="box"><b>5. Test</b>Automated walkthrough, then a real iPhone.</div>
+  </div>
+
+  <h3>Phase 1 · Understand the users</h3>
+  <p>The pitch named four groups: requesters (survivors, relatives, neighbours), peer volunteers, verified professionals and triage staff. Requesters are the most vulnerable. They may fear being seen, may share a phone, and may have little experience with apps, so their safety and ease of use drove every design choice.</p>
+  <h3>Phase 2 · Define requirements</h3>
+  <p>Each feature on the pitch's "What Lantern Circle offers" slide, and each step of the request flow, became a requirement (section 3).</p>
+  <h3>Phase 3 · Design</h3>
+  <p>Screens were planned as one simple path per task with one main action each. Design rules were set before coding: a calm brand palette, large tap targets, plain language, and a quick-exit button on every screen.</p>
+  <h3>Phase 4 · Build</h3>
+  <table class="data">
+    <tr><th>Tool</th><th>Purpose</th><th>Why we chose it</th></tr>
+    <tr><td><b>React Native</b></td><td>One codebase for iPhone and Android</td><td>Widely used and well documented</td></tr>
+    <tr><td><b>Expo (SDK 58)</b></td><td>Run on a phone with Expo Go, no app store</td><td>Fastest setup for beginners</td></tr>
+    <tr><td><b>JavaScript</b></td><td>Programming language</td><td>No compile step or types to learn</td></tr>
+    <tr><td><b>Git and GitHub</b></td><td>Version control and submission</td><td>Keeps history; required by the course</td></tr>
+    <tr><td><b>Playwright</b></td><td>Automated screen captures and walkthrough</td><td>Checks every screen loads without errors</td></tr>
+  </table>
+  <h3>Phase 5 · Test and refine</h3>
+  <p>The full journey ran automatically in a phone-sized browser (390 × 844 points), then on a real iPhone through Expo Go. Results are in section 7.</p>
+  <div class="footer"><span>Lantern Circle | Help that finds you</span><span>3</span></div>
+</section>
+
+<!-- REQUIREMENTS -->
+<section class="page">
+  <div class="eyebrow">Section 3</div>
+  <h2>Requirements and how they are met</h2>
+  <p class="lead">All six features from the pitch are in the app. Features 1 to 4 run end to end, as the pitch promised, and the learning library is a small reviewed section.</p>
+  <table class="data">
+    <tr><th style="width:9mm">#</th><th>Requirement (from the pitch)</th><th>Where it is in the app</th><th style="width:22mm">Status</th></tr>
+    <tr><td>R1</td><td>Request support and be matched to the right responder</td><td>Request support → status screen</td><td><span class="pill ok">Done</span></td></tr>
+    <tr><td>R2</td><td>Report a girl at risk; urgent reports go to triage staff only</td><td>Report screen; dashboard marks it "staff only"</td><td><span class="pill ok">Done</span></td></tr>
+    <tr><td>R3</td><td>Survivor peer support under a pseudonym</td><td>Peer circle, e.g. "Calm Lantern 15"</td><td><span class="pill ok">Done</span></td></tr>
+    <tr><td>R4</td><td>Verified professionals: therapist, doctor, legal aid</td><td>Professional help with a choice of professional</td><td><span class="pill ok">Done</span></td></tr>
+    <tr><td>R5</td><td>Learn and understand: reviewed information</td><td>Learn screen, 5 topics with sources</td><td><span class="pill ok">Done</span></td></tr>
+    <tr><td>R6</td><td>Privacy by design: no names, minimal data, quick exit</td><td>No name fields; Quick exit on every screen</td><td><span class="pill ok">Done</span></td></tr>
+    <tr><td>R7</td><td>Random case ID; no name needed</td><td>Case ID such as LC-UCW8V</td><td><span class="pill ok">Done</span></td></tr>
+    <tr><td>R8</td><td>Match by type and language</td><td>Help type and language on the request form</td><td><span class="pill ok">Done</span></td></tr>
+    <tr><td>R9</td><td>First to accept takes the case</td><td>Dashboard; a second accept is ignored</td><td><span class="pill ok">Done</span></td></tr>
+    <tr><td>R10</td><td>Escalate when nobody replies in N minutes</td><td>"Widened the search" after 6 s (demo timing)</td><td><span class="pill sim">Simulated</span></td></tr>
+    <tr><td>R11</td><td>Never auto-dispatch police; a human verifies</td><td>Report flow shows triage steps and says so</td><td><span class="pill ok">Done</span></td></tr>
+    <tr><td>R12</td><td>SMS and USSD access for basic phones</td><td>Needs the backend</td><td><span class="pill fut">Future</span></td></tr>
+  </table>
+  <div class="grid g3" style="margin-top:6mm">
+    <div class="card dark"><div class="stat">11 / 12</div><p style="margin:2mm 0 0">requirements met in the prototype</p></div>
+    <div class="card"><div class="stat" style="color:var(--maroon)">15</div><p style="margin:2mm 0 0">screens and states captured</p></div>
+    <div class="card"><div class="stat" style="color:var(--maroon)">12 / 12</div><p style="margin:2mm 0 0">test cases passed</p></div>
+  </div>
+  <div class="footer"><span>Lantern Circle | Help that finds you</span><span>4</span></div>
+</section>
+
+<!-- UI/UX -->
+<section class="page">
+  <div class="eyebrow">Section 4</div>
+  <h2>UI/UX design principles</h2>
+  <p class="lead">The design aims to feel safe, calm and simple for a frightened first-time user. It uses the same brand palette as our pitch, so the app and presentation read as one product.</p>
+  <h3>Brand colours</h3>
+  <div class="swatches">
+    <div class="sw"><div style="background:#6B1F2E"></div><span><b>Maroon</b><br>#6B1F2E · headers, urgent</span></div>
+    <div class="sw"><div style="background:#F6F0E1"></div><span><b>Cream</b><br>#F6F0E1 · backgrounds</span></div>
+    <div class="sw"><div style="background:#E4EAD9"></div><span><b>Sage</b><br>#E4EAD9 · cards</span></div>
+    <div class="sw"><div style="background:#F0E3C8"></div><span><b>Sand</b><br>#F0E3C8 · highlights</span></div>
+    <div class="sw"><div style="background:#2B1B1F"></div><span><b>Ink</b><br>#2B1B1F · text</span></div>
+  </div>
+  <p>The app itself uses a warm lantern orange (#E8833A) for its main buttons and keeps red (#C0392B) only for the urgent report, so red always means danger. Green (#2E7D5B) marks completed steps.</p>
+
+  <div class="grid g2" style="margin-top:4mm">
+    <div class="card">
+      <div class="eyebrow">Layout and interaction</div>
+      <ul style="margin:0">
+        <li>One main action per screen, as a full-width button.</li>
+        <li>Cards and buttons at least 48 pt tall, easy for a thumb.</li>
+        <li>Each option has an icon, a title and a one-line explanation.</li>
+        <li>Numbered progress steps show the request was not lost.</li>
+        <li>Send stays disabled until a required choice is made.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Typography and language</div>
+      <ul style="margin:0">
+        <li>Titles 22–30 pt bold, body 16 pt, helper text 14 pt.</li>
+        <li>Small-capital section labels for fast scanning.</li>
+        <li>Short, warm sentences: "How can we help today?"</li>
+        <li>No medical or legal jargon on action screens.</li>
+        <li>Screen-reader labels on buttons; high text contrast.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card dark" style="margin-top:4mm">
+    <div class="eyebrow">Privacy and safety by design</div>
+    <div class="grid g2" style="gap:2mm 8mm">
+      <div>• No name, phone or email fields anywhere.</div>
+      <div>• A random case ID is the only link to a request.</div>
+      <div>• <strong>Quick exit</strong> on every screen clears all data and shows a weather screen.</div>
+      <div>• A 1.5-second long-press on the temperature returns to the app.</div>
+      <div>• Chats remind users not to share names, numbers or places.</div>
+      <div>• Emergency numbers 999 and 116 shown before reporting.</div>
+    </div>
+  </div>
+  <div class="footer"><span>Lantern Circle | Help that finds you</span><span>5</span></div>
+</section>
+
+<!-- SCREENS 1 -->
+<section class="page">
+  <div class="eyebrow">Section 5</div>
+  <h2>Screen walkthrough</h2>
+  <p>Captures from a real run of the app on an iPhone-sized screen, in the order a user meets them.</p>
+  <div class="shots s3">
+    <figure class="shot"><div class="phone"><img src="shots/01-welcome.jpg"></div><figcaption><b>Fig 1 · Welcome</b>Privacy explained first, with emergency numbers.</figcaption></figure>
+    <figure class="shot"><div class="phone"><img src="shots/02-home.jpg"></div><figcaption><b>Fig 2 · Home</b>One question, grouped options; urgent card in red.</figcaption></figure>
+    <figure class="shot"><div class="phone"><img src="shots/03-request.jpg"></div><figcaption><b>Fig 3 · Request support</b>Help type, professional and language; Send disabled until chosen.</figcaption></figure>
+  </div>
+  <div class="footer"><span>Lantern Circle | Help that finds you</span><span>6</span></div>
+</section>
+
+<!-- SCREENS 2 -->
+<section class="page">
+  <h3 style="margin-top:0">Request status: matching and escalation</h3>
+  <p>The user gets an anonymous case ID and a three-step tracker. With no reply in time, the request widens to more helpers.</p>
+  <div class="shots s3">
+    <figure class="shot"><div class="phone"><img src="shots/04-status-matching.jpg"></div><figcaption><b>Fig 4 · Matching</b>Case ID and progress tracker.</figcaption></figure>
+    <figure class="shot"><div class="phone"><img src="shots/05-status-escalated.jpg"></div><figcaption><b>Fig 5 · Escalated</b>"Widened the search to more helpers."</figcaption></figure>
+    <figure class="shot"><div class="phone"><img src="shots/06-report.jpg"></div><figcaption><b>Fig 6 · Report a girl at risk</b>Area, time frame and optional details only.</figcaption></figure>
+  </div>
+  <div class="footer"><span>Lantern Circle | Help that finds you</span><span>7</span></div>
+</section>
+
+<!-- SCREENS 3 -->
+<section class="page">
+  <h3 style="margin-top:0">Triage and the volunteer dashboard</h3>
+  <p>Reports go to verified staff. On the helper side, the first volunteer to accept takes the case and it cannot be accepted twice.</p>
+  <div class="shots s3">
+    <figure class="shot"><div class="phone"><img src="shots/07-report-status.jpg"></div><figcaption><b>Fig 7 · Report status</b>Waiting for verified triage staff.</figcaption></figure>
+    <figure class="shot"><div class="phone"><img src="shots/08-volunteer.jpg"></div><figcaption><b>Fig 8 · Open requests</b>Urgent cases marked "staff only".</figcaption></figure>
+    <figure class="shot"><div class="phone"><img src="shots/09-volunteer-accepted.jpg"></div><figcaption><b>Fig 9 · Case taken</b>Moves to Taken after one accept.</figcaption></figure>
+  </div>
+  <div class="footer"><span>Lantern Circle | Help that finds you</span><span>8</span></div>
+</section>
+
+<!-- SCREENS 4 -->
+<section class="page">
+  <h3 style="margin-top:0">Helper accepted and private chat</h3>
+  <p>The home screen shows the active case; the tracker completes and the user can message the helper privately.</p>
+  <div class="shots s3">
+    <figure class="shot"><div class="phone"><img src="shots/10-home-case.jpg"></div><figcaption><b>Fig 10 · Home with case</b>Status card at the top.</figcaption></figure>
+    <figure class="shot"><div class="phone"><img src="shots/11-status-accepted.jpg"></div><figcaption><b>Fig 11 · Helper accepted</b>All three steps complete.</figcaption></figure>
+    <figure class="shot"><div class="phone"><img src="shots/12-case-chat.jpg"></div><figcaption><b>Fig 12 · Private chat</b>Talking with the matched helper.</figcaption></figure>
+  </div>
+  <div class="footer"><span>Lantern Circle | Help that finds you</span><span>9</span></div>
+</section>
+
+<!-- SCREENS 5 -->
+<section class="page">
+  <h3 style="margin-top:0">Peer circle, learning and quick exit</h3>
+  <p>Survivors talk under a pseudonym, anyone can learn reviewed facts, and one tap hides the app behind a weather screen.</p>
+  <div class="shots s3">
+    <figure class="shot"><div class="phone"><img src="shots/13-peer.jpg"></div><figcaption><b>Fig 13 · Peer circle</b>Random pseudonym, privacy reminder.</figcaption></figure>
+    <figure class="shot"><div class="phone"><img src="shots/14-learn.jpg"></div><figcaption><b>Fig 14 · Learn</b>Five topics with sources.</figcaption></figure>
+    <figure class="shot"><div class="phone"><img src="shots/15-quick-exit.jpg"></div><figcaption><b>Fig 15 · Quick exit</b>Neutral disguise screen.</figcaption></figure>
+  </div>
+  <div class="footer"><span>Lantern Circle | Help that finds you</span><span>10</span></div>
+</section>
+
+<!-- ARCHITECTURE + TESTING -->
+<section class="page">
+  <div class="eyebrow">Section 6</div>
+  <h2>System architecture</h2>
+  <p>All app data lives in <code>App.js</code>, which decides which screen to show. Screens only display data and report taps, so a beginner can follow the code without a navigation library.</p>
+<pre>App.js              app state, which screen is shown, simulated matching
+src/theme.js        colours, spacing, text sizes
+src/components.js   Screen, Button, OptionCard, Chips, Card, Label
+src/data.js         help types, languages, learn topics, ID generators
+src/screens/        Welcome, Home, Request, Status, Report, Chat,
+                    Learn, Volunteer, Exit</pre>
+  <div class="flow">
+    <div class="box"><b>Matching</b>Request sent with a case ID.</div><div class="arrow">›</div>
+    <div class="box"><b>Escalated</b>No reply after 6 s; search widens.</div><div class="arrow">›</div>
+    <div class="box"><b>Accepted</b>First helper wins; later accepts ignored.</div>
+  </div>
+  <p>Urgent reports start in <b>triage</b> and skip escalation, because only staff handle them. In the full system, the in-memory state becomes a Django REST API and database, the timers become APScheduler jobs, and Africa's Talking adds SMS. The screens stay the same.</p>
+  <div class="card sand" style="margin-top:6mm">
+    <div class="eyebrow">Development steps</div>
+    <ol style="margin:0;columns:2;column-gap:8mm">
+      <li>Created a blank Expo project and folders.</li>
+      <li>Set colours, spacing and text sizes in one theme file.</li>
+      <li>Built reusable components (Screen, Button, OptionCard, Chips, Card).</li>
+      <li>Built each screen and linked them in <code>App.js</code>.</li>
+      <li>Added simulated matching, escalation and first-to-accept.</li>
+      <li>Tested, fixed issues, wrote the README, pushed to GitHub.</li>
+    </ol>
+  </div>
+
+  <div class="footer"><span>Lantern Circle | Help that finds you</span><span>11</span></div>
+</section>
+<section class="page">
+  <div class="eyebrow">Section 7</div>
+  <h2>Testing and results</h2>
+  <p>All 12 test cases passed: 11 in an automated walkthrough with no console errors, and one by hand on an iPhone through Expo Go.</p>
+  <table class="data">
+    <tr><th style="width:10mm">#</th><th>Test case</th><th>Expected result</th><th style="width:15mm">Result</th></tr>
+    <tr><td>T1</td><td>Open the app</td><td>Welcome screen loads</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>T2</td><td>Send without a help type</td><td>Send button stays disabled</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>T3</td><td>Send a professional-help request</td><td>Case ID, "Matching helpers"</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>T4</td><td>Wait with no reply</td><td>"Widened the search"</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>T5</td><td>Submit a risk report</td><td>"Waiting for verified triage staff"</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>T6</td><td>Volunteer accepts a case</td><td>Taken; requester sees "is with you"</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>T7</td><td>Accept the same case twice</td><td>Second accept has no effect</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>T8</td><td>Message the helper</td><td>Message shown; helper replies</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>T9</td><td>Open the peer circle</td><td>Random pseudonym shown</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>T10</td><td>Expand a Learn topic</td><td>Opens and closes</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>T11</td><td>Tap Quick exit</td><td>Data cleared; weather screen</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>T12</td><td>Run on a real iPhone</td><td>Opens by QR code in Expo Go</td><td><span class="pill ok">Pass</span></td></tr>
+  </table>
+  <p style="font-size:9pt;color:var(--muted)">These tests check the app works as designed. The pitch's research goals, such as time to first response against a shared inbox, need the real backend and volunteers.</p>
+  <div class="footer"><span>Lantern Circle | Help that finds you</span><span>12</span></div>
+</section>
+
+<!-- LIMITS + CONCLUSION -->
+<section class="page">
+  <div class="eyebrow">Section 8</div>
+  <h2>Limitations and future work</h2>
+  <div class="grid g2">
+    <div class="card">
+      <div class="eyebrow">Limitations</div>
+      <ul style="margin:0">
+        <li>Data is in memory and lost when the app closes.</li>
+        <li>Helpers and replies are simulated with timers.</li>
+        <li>Escalation runs after 6 seconds, not minutes.</li>
+        <li>No volunteer accounts, logins or admin approval.</li>
+        <li>Needs a smartphone; basic phones not yet covered.</li>
+        <li>App text is in English only.</li>
+      </ul>
+    </div>
+    <div class="card sand">
+      <div class="eyebrow">Future work</div>
+      <ol style="margin:0">
+        <li>Django REST API and database.</li>
+        <li>Real escalation timers with APScheduler.</li>
+        <li>SMS and USSD through Africa's Talking.</li>
+        <li>Volunteer sign-up, admin checks, web dashboard.</li>
+        <li>Kiswahili and other local languages.</li>
+        <li>Field tests; measure time to first response.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="eyebrow" style="margin-top:9mm">Section 9</div>
+  <h2>Conclusion</h2>
+  <div class="card dark">
+    <p style="font-size:11.5pt;margin:0">The prototype shows the Lantern Circle idea works as a phone app. A user can ask for help, report a girl at risk, and talk to a helper or peers without giving a name, and can leave in one tap. The next step is the Django backend and SMS access, so real helpers and basic phones can join.</p>
+  </div>
+
+  <h3>How to run the app</h3>
+  <div class="step"><span class="num">1</span><div>Install Node.js (LTS) and Git on a computer, and Expo Go on the phone.</div></div>
+  <div class="step"><span class="num">2</span><div><code>git clone https://github.com/Ezra2302/APT3065.git</code> then <code>cd APT3065</code></div></div>
+  <div class="step"><span class="num">3</span><div><code>npm install</code> then <code>npx expo start</code></div></div>
+  <div class="step"><span class="num">4</span><div>Scan the QR code with the iPhone camera. On a blocked network use <code>npx expo start --tunnel</code>.</div></div>
+
+  <div class="footer"><span>Lantern Circle | Help that finds you</span><span>13</span></div>
+</section>
+<section class="page">
+  <h3 style="margin-top:0">References</h3>
+  <ul style="font-size:9pt">
+    <li>World Health Organization. <i>Female genital mutilation</i> fact sheet.</li>
+    <li>UNICEF. Global data on female genital mutilation.</li>
+    <li>Kenya National Bureau of Statistics. <i>Kenya Demographic and Health Survey 2022</i>.</li>
+    <li>UN General Assembly. Resolution 67/146 on eliminating female genital mutilations (2012).</li>
+    <li>National Gender and Equality Commission (2025); FGM/C Research Initiative.</li>
+    <li>Expo documentation (docs.expo.dev); React Native documentation (reactnative.dev).</li>
+  </ul>
+  <div class="footer"><span>Lantern Circle | Help that finds you</span><span>14</span></div>
+</section>
+</body>
+</html>
